@@ -1,9 +1,9 @@
-/*
-SET SNOWFLAKE_ACCOUNT_BASE_URL=https://org-account.snowflakecomputing.com
-SET PAT=my_programmatic_access_token
-*/
+#
+# SET SNOWFLAKE_ACCOUNT_BASE_URL=https://org-account.snowflakecomputing.com
+# SET PAT=my_programmatic_access_token
+#
 
-//curl command
+#curl command
 curl -X POST "$SNOWFLAKE_ACCOUNT_BASE_URL/api/v2/cortex/agent:run" \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
