@@ -8,7 +8,6 @@ session = get_active_session()
 API_ENDPOINT = "/api/v2/cortex/agent:run"
 API_TIMEOUT = 50000  # in milliseconds
 
-#customize based on your model and search service name
 CORTEX_SEARCH_SERVICES = "SNOW_DB.SNOW_SCHEMA.customer_comment_search_service"
 SEMANTIC_MODELS = "SNOW_DB.SNOW_SCHEMA.BILLING_ANALYST_SEMANTIC_MODEL"
 
@@ -46,16 +45,22 @@ def snowflake_api_call(query: str, limit: int = 10):
                     "name": "data_model"
                 }
             },
+         {
+            "tool_spec": {
+                "type": "sql_exec",
+                "name": "sql_exec"
+            }
+        },
             {
                 "tool_spec": {
                     "type": "cortex_search",
-                    "name": "search1"
+                    "name": "comment_search"
                 }
             },
         ],
         "tool_resources": {
             "data_model": {"semantic_view": SEMANTIC_MODELS},
-            "search1": {
+            "comment_search": {
                 "name": CORTEX_SEARCH_SERVICES,
                  "title_column": "CUSTOMER_NAME",
                  "id_column": "CUSTOMER_ID",
