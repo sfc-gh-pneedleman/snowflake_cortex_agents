@@ -9,14 +9,14 @@ curl -X POST "$SNOWFLAKE_ACCOUNT_BASE_URL/api/v2/cortex/agent:run" \
 --header 'Accept: application/json' \
 --header "Authorization: Bearer $PAT" \
 --data '{
-    "model": "claude-3-5-sonnet",
+    "model": "claude-3-7-sonnet",
     "messages": [
         {
             "role": "user",
             "content": [
                 {
                     "type": "text",
-                    "text": "What are the top 10 total invoice amounts grouped by state?"
+                    "text": "What are the top 10 total line amounts grouped by state?"
                 }
             ]
         }
@@ -45,8 +45,7 @@ curl -X POST "$SNOWFLAKE_ACCOUNT_BASE_URL/api/v2/cortex/agent:run" \
         "data_model": {"semantic_view": "SNOW_DB.SNOW_SCHEMA.BILLING_ANALYST_SEMANTIC_MODEL"},
         "comment_search": {
                     "name": "SNOW_DB.SNOW_SCHEMA.customer_comment_search_service",
-                    "title_column": "CUSTOMER_NAME",
-                    "id_column": "CUSTOMER_ID",
+                    "id_column": "COMMENT_ID",
                     "max_results": 5
             }
     }
