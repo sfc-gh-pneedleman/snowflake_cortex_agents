@@ -4,6 +4,7 @@ import _snowflake
 from snowflake.snowpark.context import get_active_session
 
 session = get_active_session()
+st.set_page_config(layout="wide")
 
 API_ENDPOINT = "/api/v2/cortex/agent:run"
 API_TIMEOUT = 50000  # in milliseconds
@@ -25,8 +26,8 @@ def run_snowflake_query(query):
 def snowflake_api_call(query: str, limit: int = 10):
     
     payload = {
-        "model": "claude-3-5-sonnet",
-        "response_instruction": "You will always maintain a friendly tone and provide concise response.",
+        "model": "claude-3-7-sonnet",
+        "response_instruction": "Please always try to execute SQL, maintain a friendly tone, and provide concise responses.",
         "messages": [
             {
                 "role": "user",
@@ -42,8 +43,9 @@ def snowflake_api_call(query: str, limit: int = 10):
             {
                 "tool_spec": {
                     "type": "cortex_analyst_text_to_sql",
-                    "name": "data_model"
-                }
+                    "name": "data_model",
+                },
+
             },
          {
             "tool_spec": {
@@ -62,9 +64,8 @@ def snowflake_api_call(query: str, limit: int = 10):
             "data_model": {"semantic_view": SEMANTIC_MODELS},
             "comment_search": {
                 "name": CORTEX_SEARCH_SERVICES,
-                 "title_column": "CUSTOMER_NAME",
-                 "id_column": "CUSTOMER_ID",
-                 "max_results": 5
+                "id_column": "COMMENT_ID",
+                "max_results": 5
             }
         }
     }
@@ -138,7 +139,7 @@ def process_sse_response(response):
     return text, sql, citations
 
 def main():
-    st.title("Billing Analyst Agent Assistant")
+    st.title("Billing Analyst Agent")
 
     # Sidebar for new chat
     with st.sidebar:
@@ -165,7 +166,9 @@ def main():
             response = snowflake_api_call(query, 1)
             text, sql, citations = process_sse_response(response)
 
-            #uncomment to view API response for debugging 
+            #########
+            ## uncomment to view API response for debugging 
+            #########
             #st.write(response)
             
             # Add assistant response to chat
@@ -181,7 +184,7 @@ def main():
                             for citation in citations:
                                 doc_id = citation.get("doc_id", "")
                                 if doc_id:
-                                    query = f"SELECT name || ': ' || comment_text FROM customer_comments  cc JOIN customer c on CC.CUSTOMER_iD = C.Customer_ID WHERE c.customer_id = '{doc_id}'"
+                                    query = f"SELECT name || ': '|| comment_text FROM customer_comments cc JOIN CUSTOMER c ON cc.CUSTOMER_ID = c.CUSTOMER_ID WHERE  cc.COMMENT_ID = '{doc_id}'"
                                     result = run_snowflake_query(query)
                                     result_df = result.to_pandas()
                                     if not result_df.empty:
