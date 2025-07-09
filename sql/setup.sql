@@ -43,6 +43,7 @@ create or replace TABLE INVOICE_LINES (
 
 --Customer Comments 
 create or replace TABLE CUSTOMER_COMMENTS (
+	COMMENT_ID NUMBER,
 	CUSTOMER_ID VARCHAR(16777216),
 	COMMENT_TEXT VARCHAR(16777216),
 	COMMENT_DATE TIMESTAMP_TZ
@@ -105,16 +106,16 @@ CREATE OR REPLACE CORTEX SEARCH SERVICE customer_name_search_service
   );
 
 
---customer comments; this command will take some time
+--customer comments; this command will take some time (~6 min)
 CREATE OR REPLACE CORTEX SEARCH SERVICE customer_comment_search_service
   ON comment_text 
   ATTRIBUTES  customer_name
-  WAREHOUSE = compute_m_wh
+  WAREHOUSE = compute_xs_wh
   TARGET_LAG = '24 hour'
   AS (
     SELECT
+        COMMENT_ID,
         c.name as CUSTOMER_NAME, 
-		customer_id,
         CUSTOMER_NAME||' comment: ' || comment_text as comment_text
     FROM customer_comments cc JOIN CUSTOMER c ON cc.customer_id = c.customer_id
 );
